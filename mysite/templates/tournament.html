@@ -1,0 +1,92 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
+%}
+<h1 align="center">Your Battle Team</h1>
+<ul class="list-group list-group-flush" id="teams">
+  {% for team in user.teams %}
+  <li class="list-group-item">
+    {{ team.mon1 }}
+    {{ team.mon2 }}
+    {{ team.mon3 }}
+    {{ team.mon4 }}
+    {{ team.mon5 }}
+    {{ team.mon6 }}
+    <div class="image-container">
+  <div class="row">
+    <div class="column">
+      <img src="static/images/{{team.mon1}}.png" alt="Image 1">
+    </div>
+    <div class="column">
+      <img src="static/images/{{team.mon2}}.png" alt="Image 2">
+    </div>
+    <div class="column">
+      <img src="static/images/{{team.mon3}}.png" alt="Image 3">
+    </div>
+  </div>
+  <div class="row">
+    <div class="column">
+      <img src="static/images/{{team.mon4}}.png" alt="Image 4">
+    </div>
+    <div class="column">
+      <img src="static/images/{{team.mon5}}.png" alt="Image 5">
+    </div>
+    <div class="column">
+      <img src="static/images/{{team.mon6}}.png" alt="Image 6">
+    </div>
+  </div>
+</div>
+
+  </li>
+  {% endfor %}
+</ul>
+<h1 align="center">vs.</h1>
+<ul class="list-group list-group-flush" id="teams">
+  {% for team in opponent.teams %}
+  <li class="list-group-item">
+    {{ team.mon1 }}
+    {{ team.mon2 }}
+    {{ team.mon3 }}
+    {{ team.mon4 }}
+    {{ team.mon5 }}
+    {{ team.mon6 }}
+    <div class="image-container">
+  <div class="row">
+    <div class="column">
+      <img src="static/images/{{team.mon1}}.png" alt="Opp 1">
+    </div>
+    <div class="column">
+      <img src="static/images/{{team.mon2}}.png" alt="Opp 2">
+    </div>
+    <div class="column">
+      <img src="static/images/{{team.mon3}}.png" alt="Opp 3">
+    </div>
+  </div>
+  <div class="row">
+    <div class="column">
+      <img src="static/images/{{team.mon4}}.png" alt="Opp 4">
+    </div>
+    <div class="column">
+      <img src="static/images/{{team.mon5}}.png" alt="Opp 5">
+    </div>
+    <div class="column">
+      <img src="static/images/{{team.mon6}}.png" alt="Opp 6">
+    </div>
+  </div>
+</div>
+  </li>
+  {% endfor %}
+</ul>
+
+<div>
+      <form action="{{ url_for('views.tourney') }}" method="POST">
+<label for="my-dropdown">How many battles did you win:</label>
+    <select name="my-dropdown" id="my-dropdown">
+      <option value="0">0</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+    </select>
+    <br><br>
+    <button type="submit">Submit</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
+%}
+<h1 align="center">Your Battle Team</h1>
+<ul class="list-group list-group-flush" id="teams">
+  {% for team in user.teams %}
+  <li class="list-group-item">
+    {{ team.mon1 }}
+    {{ team.mon2 }}
+    {{ team.mon3 }}
+    {{ team.mon4 }}
+    {{ team.mon5 }}
+    {{ team.mon6 }}
+    <div class="image-container">
+  <div class="row">
+    <div class="column">
+      <img src="static/images/{{team.mon1}}.png" alt="Image 1">
+    </div>
+    <div class="column">
+      <img src="static/images/{{team.mon2}}.png" alt="Image 2">
+    </div>
+    <div class="column">
+      <img src="static/images/{{team.mon3}}.png" alt="Image 3">
+    </div>
+  </div>
+  <div class="row">
+    <div class="column">
+      <img src="static/images/{{team.mon4}}.png" alt="Image 4">
+    </div>
+    <div class="column">
+      <img src="static/images/{{team.mon5}}.png" alt="Image 5">
+    </div>
+    <div class="column">
+      <img src="static/images/{{team.mon6}}.png" alt="Image 6">
+    </div>
+  </div>
+</div>
+
+  </li>
+  {% endfor %}
+</ul>
+
+{% if current_stage == 'Welcome'%}
+<form method="POST">
+  <div style="display: flex; flex-direction: row">
+    {% for i in range(1, 4) %}
+    <input type="text" list="pokemon" name="mon{{i}}" id="mon{{i}}">
+        <datalist id="pokemon">
+        {% for option in options %}
+            <option value="{{ option }}">{{ option }}</option>
+        {% endfor %}
+    </datalist>
+    {% endfor %}
+  </div>
+  <div style="display: flex; flex-direction: row">
+  {% for i in range(4, 7) %}
+    <input type="text" list="pokemon" name="mon{{i}}" id="mon{{i}}">
+        <datalist id="pokemon">
+        {% for option in options %}
+            <option value="{{ option }}">{{ option }}</option>
+        {% endfor %}
+    </datalist>
+    {% endfor %}
+  </div>
+  <br />
+  <div align="center">
+    <button type="submit" class="btn btn-primary">Submit Team</button>
+  </div>
+</form>
+{% endif %}
+
+{% if current_stage == 'Battle'%}
+<h1>{{ban3}}</h1>
+{% endif %}
+
+{% endblock %}

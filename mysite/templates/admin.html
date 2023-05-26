@@ -1,0 +1,22 @@
+{% extends "base.html" %} {% block title %}Admin{% endblock %} {% block content
+%}
+
+    {% if current_stage == "Welcome"%}
+        <h1 align="center">Begin Tournament</h1>
+            <div align="center">
+                <form method="post">
+                    <button type="submit" class="btn btn-primary" name="my_button" value="Welcome">Battle</button>
+                </form>
+            </div>
+    {% endif %}
+
+    {% if current_stage == "Battle"%}
+        <h1 align="center">Restart Check-ins</h1>
+            <div align="center">
+                <form method="post">
+                    <button type="submit" class="btn btn-primary" name="my_button" value="Battle">Welcome</button>
+                </form>
+            </div>
+    {% endif %}
+
+{% endblock %}
