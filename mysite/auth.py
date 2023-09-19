@@ -18,6 +18,7 @@ def login():
         if user:
             if check_password_hash(user.password, password):
                 flash('Logged in successfully!', category='success')
+                flash('Enable Desktop site for best results', category='error')
                 login_user(user, remember=True)
                 return redirect(url_for('views.home'))
             else:
@@ -61,6 +62,7 @@ def sign_up():
             db.session.commit()
             login_user(new_user, remember=True)
             flash('Account created!', category='success')
+            flash('Enable Desktop site for best results', category='error')
             return redirect(url_for('views.home'))
 
     return render_template("sign_up.html", user=current_user)

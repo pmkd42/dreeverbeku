@@ -1,6 +1,34 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
 %}
-<h1 align="center">Your Battle Team</h1>
+<style>
+    .row {
+    display: flex;
+    }
+    .column {
+    flex: 1;
+    position: relative; /* Add this line */
+    }
+    .image-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .background-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 20%;
+      height: auto;
+      z-index: -1;
+    }
+
+    .overlay-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  </style>
+<h1 align="center" style="margin-top: 20px;">Welcome, {{user.first_name}}!</h1>
 <ul class="list-group list-group-flush" id="teams">
   {% for team in user.teams %}
   <li class="list-group-item">
@@ -10,27 +38,59 @@
     {{ team.mon4 }}
     {{ team.mon5 }}
     {{ team.mon6 }}
+    {{ team.mon7 }}
+    {{ team.mon8 }}
     <div class="image-container">
   <div class="row">
     <div class="column">
-      <img src="static/images/{{team.mon1}}.png" alt="Image 1">
+      <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon1}}.png" alt="Opp 1">
+      {% if shadow_1 == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+      {% endif %}
     </div>
     <div class="column">
-      <img src="static/images/{{team.mon2}}.png" alt="Image 2">
+      <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon2}}.png" alt="Opp 2">
+      {% if shadow_2 == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
     </div>
     <div class="column">
-      <img src="static/images/{{team.mon3}}.png" alt="Image 3">
+      <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon3}}.png" alt="Opp 3">
+      {% if shadow_3 == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
+    </div>
+    <div class="column">
+      <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon4}}.png" alt="Opp 4">
+      {% if shadow_4 == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
     </div>
   </div>
   <div class="row">
     <div class="column">
-      <img src="static/images/{{team.mon4}}.png" alt="Image 4">
+      <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon5}}.png" alt="Opp 5">
+      {% if shadow_5 == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
     </div>
     <div class="column">
-      <img src="static/images/{{team.mon5}}.png" alt="Image 5">
+      <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon6}}.png" alt="Opp 6">
+      {% if shadow_6 == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
     </div>
     <div class="column">
-      <img src="static/images/{{team.mon6}}.png" alt="Image 6">
+      <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon7}}.png" alt="Opp 7">
+      {% if shadow_7 == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
+    </div>
+    <div class="column">
+      <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon8}}.png" alt="Opp 8">
+      {% if shadow_8 == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
     </div>
   </div>
 </div>
@@ -42,8 +102,8 @@
 {% if current_stage == 'Welcome'%}
 <form method="POST">
   <div style="display: flex; flex-direction: row">
-    {% for i in range(1, 4) %}
-    <input type="text" list="pokemon" name="mon{{i}}" id="mon{{i}}">
+    {% for i in range(1, 5) %}
+    <input type="text" list="pokemon" name="mon{{i}}" id="mon{{i}}" placeholder="Enter/change Pokemon{{i}}">
         <datalist id="pokemon">
         {% for option in options %}
             <option value="{{ option }}">{{ option }}</option>
@@ -52,8 +112,8 @@
     {% endfor %}
   </div>
   <div style="display: flex; flex-direction: row">
-  {% for i in range(4, 7) %}
-    <input type="text" list="pokemon" name="mon{{i}}" id="mon{{i}}">
+  {% for i in range(5, 9) %}
+    <input type="text" list="pokemon" name="mon{{i}}" id="mon{{i}}" placeholder="Enter/change Pokemon{{i}}">
         <datalist id="pokemon">
         {% for option in options %}
             <option value="{{ option }}">{{ option }}</option>
@@ -69,7 +129,8 @@
 {% endif %}
 
 {% if current_stage == 'Battle'%}
-<h1>{{ban3}}</h1>
+<h1 style="padding-top: 20px;">Matchup ready! Go to tournament page</h1>
 {% endif %}
 
 {% endblock %}
+<img src="https://oweishyl.sirv.com/Welcome%20to%20PvP.png" width="1366" height="700" alt="">
