@@ -1,6 +1,17 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
 %}
-<h1 align="center">Your Battle Team</h1>
+<style>
+.column {
+    flex: 1;
+    position: relative; /* Add this line */
+    }
+.column_opp {
+    flex: 1;
+    position: relative; /* Add this line */
+    }
+</style>
+<h1 align="center">NEW OPPONENT!</h1>
+<h2 align="center">Your registered team</h1>
 <ul class="list-group list-group-flush" id="teams">
   {% for team in user.teams %}
   <li class="list-group-item">
@@ -10,35 +21,112 @@
     {{ team.mon4 }}
     {{ team.mon5 }}
     {{ team.mon6 }}
+    {{ team.mon7 }}
+    {{ team.mon8 }}
     <div class="image-container">
-  <div class="row">
+  <div class="row" style="width: 100%; max-width: 100vw; overflow-x: hidden;">
+
     <div class="column">
-      <img src="static/images/{{team.mon1}}.png" alt="Image 1">
+    {% if toban1 == 1 or toban2 == 1%}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon1}}.png" alt="1" style="filter: grayscale(100%);">
+    {% else %}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon1}}.png" alt="1">
+    {% endif %}
+    {% if team.mon1_shadow == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
     </div>
+
     <div class="column">
-      <img src="static/images/{{team.mon2}}.png" alt="Image 2">
+    {% if toban1 == 2 or toban2 == 2%}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon2}}.png" alt="2" style="filter: grayscale(100%);">
+    {% else %}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon2}}.png" alt="2">
+    {% endif %}
+    {% if team.mon2_shadow == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
     </div>
+
     <div class="column">
-      <img src="static/images/{{team.mon3}}.png" alt="Image 3">
+    {% if toban1 == 3 or toban2 == 3%}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon3}}.png" alt="3" style="filter: grayscale(100%);">
+    {% else %}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon3}}.png" alt="3">
+    {% endif %}
+    {% if team.mon3_shadow == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
+    </div>
+
+    <div class="column">
+    {% if toban1 == 4 or toban2 == 4%}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon4}}.png" alt="4" style="filter: grayscale(100%);">
+    {% else %}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon4}}.png" alt="4">
+    {% endif %}
+    {% if team.mon4_shadow == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
     </div>
   </div>
-  <div class="row">
+  <div class="row" style="width: 100%; max-width: 100vw; overflow-x: hidden;">
     <div class="column">
-      <img src="static/images/{{team.mon4}}.png" alt="Image 4">
+    {% if toban1 == 5 or toban2 == 5%}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon5}}.png" alt="5" style="filter: grayscale(100%);">
+    {% else %}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon5}}.png" alt="5">
+    {% endif %}
+    {% if team.mon5_shadow == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
+    </div>
+
+    <div class="column">
+    {% if toban1 == 6 or toban2 == 6%}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon6}}.png" alt="6" style="filter: grayscale(100%);">
+    {% else %}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon6}}.png" alt="6">
+    {% endif %}
+    {% if team.mon6_shadow == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
+    </div>
+
+    <div class="column">
+    {% if toban1 == 7 or toban2 == 7%}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon7}}.png" alt="7" style="filter: grayscale(100%);">
+    {% else %}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon7}}.png" alt="7">
+    {% endif %}
+    {% if team.mon7_shadow == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
     </div>
     <div class="column">
-      <img src="static/images/{{team.mon5}}.png" alt="Image 5">
-    </div>
-    <div class="column">
-      <img src="static/images/{{team.mon6}}.png" alt="Image 6">
+    {% if toban1 == 8 or toban2 == 8%}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon8}}.png" alt="8" style="filter: grayscale(100%);">
+    {% else %}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon8}}.png" alt="8">
+    {% endif %}
+    {% if team.mon8_shadow == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
     </div>
   </div>
 </div>
-
+{% if ban == 1 %}
+    <div class="container" style="position: relative; width: 400px; height: 30px; background-color: white; display: flex; justify-content: center; align-items: center; padding: 20px;">
+        <button id="submitBtn" disabled onclick="submitForm1()">Save these Pokemon from ban!</button>
+    </div>
+{% endif %}
   </li>
   {% endfor %}
 </ul>
+
 <h1 align="center">vs.</h1>
+<h1 align="center">{{opponent.first_name}}</h1>
+<h2 align="center">Wait for your opponent to submit bans, and then Refresh!</h2>
 <ul class="list-group list-group-flush" id="teams">
   {% for team in opponent.teams %}
   <li class="list-group-item">
@@ -48,45 +136,172 @@
     {{ team.mon4 }}
     {{ team.mon5 }}
     {{ team.mon6 }}
+    {{ team.mon7 }}
+    {{ team.mon8 }}
     <div class="image-container">
   <div class="row">
-    <div class="column">
-      <img src="static/images/{{team.mon1}}.png" alt="Opp 1">
+    <div class="column_opp">
+    {% if oppban1 == 1 or oppban2 == 1%}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon1}}.png" alt="opp_1" style="filter: grayscale(100%);">
+    {% else %}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon1}}.png" alt="opp_1">
+    {% endif %}
+    {% if team.mon1_shadow == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
     </div>
-    <div class="column">
-      <img src="static/images/{{team.mon2}}.png" alt="Opp 2">
+    <div class="column_opp">
+    {% if oppban1 == 2 or oppban2 == 2%}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon2}}.png" alt="opp_2" style="filter: grayscale(100%);">
+    {% else %}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon2}}.png" alt="opp_2">
+    {% endif %}
+    {% if team.mon2_shadow == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
     </div>
-    <div class="column">
-      <img src="static/images/{{team.mon3}}.png" alt="Opp 3">
+    <div class="column_opp">
+    {% if oppban1 == 3 or oppban2 == 3%}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon3}}.png" alt="opp_3" style="filter: grayscale(100%);">
+    {% else %}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon3}}.png" alt="opp_3">
+    {% endif %}
+    {% if team.mon3_shadow == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
+    </div>
+    <div class="column_opp">
+    {% if oppban1 == 4 or oppban2 == 4%}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon4}}.png" alt="opp_4" style="filter: grayscale(100%);">
+    {% else %}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon4}}.png" alt="opp_4">
+    {% endif %}
+    {% if team.mon4_shadow == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
     </div>
   </div>
   <div class="row">
-    <div class="column">
-      <img src="static/images/{{team.mon4}}.png" alt="Opp 4">
+    <div class="column_opp">
+    {% if oppban1 == 5 or oppban2 == 5%}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon5}}.png" alt="opp_5" style="filter: grayscale(100%);">
+    {% else %}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon5}}.png" alt="opp_5">
+    {% endif %}
+    {% if team.mon5_shadow == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
     </div>
-    <div class="column">
-      <img src="static/images/{{team.mon5}}.png" alt="Opp 5">
+    <div class="column_opp">
+    {% if oppban1 == 6 or oppban2 == 6%}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon6}}.png" alt="opp_6" style="filter: grayscale(100%);">
+    {% else %}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon6}}.png" alt="opp_6">
+    {% endif %}
+    {% if team.mon6_shadow == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
     </div>
-    <div class="column">
-      <img src="static/images/{{team.mon6}}.png" alt="Opp 6">
+    <div class="column_opp">
+    {% if oppban1 == 7 or oppban2 == 7%}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon7}}.png" alt="opp_7" style="filter: grayscale(100%);">
+    {% else %}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon7}}.png" alt="opp_7">
+    {% endif %}
+    {% if team.mon7_shadow == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
+    </div>
+    <div class="column_opp">
+    {% if oppban1 == 8 or oppban2 == 8%}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon8}}.png" alt="opp_8" style="filter: grayscale(100%);">
+    {% else %}
+        <img src="https://img.pokemondb.net/sprites/home/normal/{{team.mon8}}.png" alt="opp_8">
+    {% endif %}
+    {% if team.mon8_shadow == 1%}
+        <img src="https://silph.gg/img/icon-shadow-purple.png" alt="shadow" style="position: absolute; top: 0; left: 0; opacity: 0.5;">
+        {% endif %}
     </div>
   </div>
 </div>
   </li>
   {% endfor %}
 </ul>
-
+{% if subm == 1 %}
+{% if submitted == 0 %}
 <div>
-      <form action="{{ url_for('views.tourney') }}" method="POST">
-<label for="my-dropdown">How many battles did you win:</label>
-    <select name="my-dropdown" id="my-dropdown">
+      <form action="{{ url_for('views.tourney') }}" onsubmit="return confirmSubmit()" method="POST">
+<label for="form-2" style="font-size: 20px;">How many battles did you win:</label>
+    <input type="hidden" name="form_type" value="form2">
+    <select name="form-type" id="form2" style="font-size: 20px; padding: 10px;">
       <option value="0">0</option>
+      {% if opponent != user %}
       <option value="1">1</option>
       <option value="2">2</option>
       <option value="3">3</option>
+      {% endif %}
     </select>
     <br><br>
     <button type="submit">Submit</button>
   </form>
 </div>
+{% endif %}
+{% endif %}
+  <script>
+    // JavaScript code here
+    var columnElements = document.getElementsByClassName("column");
+    var blurCount = 0;
+    var blurredImages = [];
+
+    Array.from(columnElements).forEach(function(columnElement) {
+      var imageElement = columnElement.querySelector("img");
+
+      columnElement.addEventListener("click", function() {
+        if (blurCount < 2 || blurredImages.includes(imageElement)) {
+          if (blurredImages.includes(imageElement)) {
+            imageElement.style.filter = "none";
+            blurredImages = blurredImages.filter(function(img) {
+              return img !== imageElement;
+            });
+            blurCount--;
+          } else {
+            imageElement.style.filter = "blur(5px)";
+            blurredImages.push(imageElement);
+            blurCount++;
+          }
+
+          updateSubmitButton();
+        }
+      });
+    });
+
+    function updateSubmitButton() {
+      var submitBtn = document.getElementById("submitBtn");
+      if (blurCount === 2) {
+        submitBtn.disabled = false;
+      } else {
+        submitBtn.disabled = true;
+      }
+    }
+
+    function submitForm1() {
+        var hiddenForm = document.getElementById("form1");
+          hiddenForm.querySelector("input[name='selectedImages']").value = JSON.stringify(blurredImages.map(function(img) {
+            return img.alt;
+          }));
+      // Perform necessary operations for Button 1
+      document.getElementById('form1').submit();
+    }
+    function confirmSubmit() {
+  if (confirm("Are you sure you want to submit scores?")) {
+    return true;  // Proceed with form submission
+  } else {
+    return false; // Cancel form submission
+  }
+}
+  </script>
+<form id="form1" action="{{ url_for('views.tourney') }}" method="POST" style="display: none;">
+    <input type="hidden" name="form_type" value="form1">
+     <input type="hidden" name="selectedImages">
+  </form>
 {% endblock %}
