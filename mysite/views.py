@@ -468,16 +468,12 @@ def nextround():
                         user.round_wins
                     ])
             with open(file_path, 'r') as file:
-                reader = csv.reader(file)
+                reader = csv.DictReader(file)
+                players = []
                 for row in reader:
+                    players.append(row)
                     print(row)
     #create matchups based on master
-                players = []
-                with open(file_path, 'r') as file:
-                    reader = csv.DictReader(file)
-                    for row in reader:
-                        players.append(row)
-
                 pairings = []
                 played = set()
                 print(players)
@@ -494,7 +490,7 @@ def nextround():
                         for player in players:
                             if player['ign'] not in current_player['already_matched'] and player['ign'] not in played:
                                 opponent = player
-                                print("oppoenent is", opponent)
+                                print("opponent is", opponent)
                                 break
 
                         if opponent is None:
@@ -528,7 +524,7 @@ def admin():
 
     if request.method == 'GET':
         ign = current_user.first_name
-        if (ign == "Pmkd42"):
+        if (ign == "Pmkd42" or ign == "admin"):
             return render_template("admin.html", user=current_user, current_stage=stage)
         else:
             flash("Not an Admin!", category='error')
