@@ -214,8 +214,10 @@ def tourney():
         for pairing in pairings:
                 if pairing[0] == player:
                     opponent = pairing[1]
+                    break
                 elif pairing[1] == player:
                     opponent = pairing[0]
+                    break
         opponent_string = opponent
         opponent = User.query.filter_by(first_name=opponent).first()
         dbplayer = User.query.filter_by(first_name=player).first()
@@ -370,9 +372,11 @@ def tourney():
                 # Update the wins field in the database
                 dbplayer.wins = serialized_pairings
 
-                dbplayer.total_wins += new_score
+                if(dbplayer.first_name != opponent.first_name):
+                    dbplayer.total_wins += new_score
+                    dbplayer.toughness += new_score
 
-                if(new_score >=2):
+                if(new_score >=2 and dbplayer.first_name != opponent.first_name):
                     dbplayer.round_wins += 1
 
                 already_played = json.loads(dbplayer.already_matched)
@@ -381,7 +385,6 @@ def tourney():
                 dbplayer.already_matched = ap_ser
                 db.session.commit()
 
-                dbplayer.toughness += new_score
                 oppt = json.loads(opponent.wins)
 
                 db.session.commit()
@@ -450,6 +453,10 @@ def nextround():
             db.session.commit()'''
 
             users = User.query.all()
+            for user in users:
+                if(user.first_name == "admin"):
+                    users.remove(user)
+                    break
             file_path = '/home/dreeverbeku/mysite/master_match.csv'
             with open(file_path, 'w', newline='') as file:
                 writer = csv.writer(file)
@@ -552,14 +559,17 @@ def admin():
             users = User.query.all()
             user_data = []
             for user in users:
-                user_data.append({
-                    'ign': user.first_name
+                if(user.first_name == "admin"):
+                    users.remove(user)
+                else:
+                    user_data.append({
+                        'ign': user.first_name
             # Add other attributes as per your User class
-                })
+                    })
             user_data = json.dumps(user_data)
 
             top_user = User.query.first()
-            matrix_size = top_user.id
+            matrix_size = top_user.id - 1
             already_played_matrix = [[0] * matrix_size for _ in range(matrix_size)]
             already_played_matrix = json.dumps(already_played_matrix)
 
@@ -605,9 +615,9 @@ def admin():
                     ])
             #top_user = User.query.first()
             #player_count = top_user.id
-            player_count = User.query.count()
+            player_count = User.query.count() - 1
             print("count is:", player_count)
-            round_count = math.floor((math.log2(player_count)))
+            round_count = math.ceil((math.log2(player_count)))
             print("no. of rounds is ", round_count)
             round_count = Max_rounds_t(max_rounds=round_count, current_round=1)
             db.session.add(round_count)
