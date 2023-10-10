@@ -1,10 +1,22 @@
 import csv
+import operator
 
 # The csv file exported from PvPoke with the entire list of eligible pokemon
-monList = "/Users/shreyash/Documents/devtrees/PoGoBlr/G20Cup.csv"
+monListOriginal = "/Users/shreyash/Documents/devtrees/PoGoBlr/G20Cup.csv"
+monList = "/Users/shreyash/Documents/devtrees/PoGoBlr/G20CupIndexed.csv"
 # The file to write the Pokemon List to
 writeList = "/Users/shreyash/Documents/devtrees/PoGoBlr/dreeverbeku/mysite/monlist.txt"
 # writeList = "/Users/shreyash/Documents/devtrees/PoGoBlr/testOut.txt"
+
+with open(monListOriginal, "r") as csvFile:
+    reader = csv.reader(csvFile)
+    header = next(reader)
+    sortedlist = sorted(reader, key=lambda row: int(row[2]))
+
+with open(monList, "w") as csvFile:
+    writer = csv.writer(csvFile)
+    writer.writerow(header)
+    writer.writerows(sortedlist)
 
 finalList = "["
 

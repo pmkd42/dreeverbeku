@@ -372,11 +372,13 @@ def tourney():
                 # Update the wins field in the database
                 dbplayer.wins = serialized_pairings
 
+                # Updating total wins and toughness only if the user faces an opponent
                 if(dbplayer.first_name != opponent.first_name):
                     dbplayer.total_wins += new_score
                     dbplayer.toughness += new_score
 
-                if(new_score >=2 and dbplayer.first_name != opponent.first_name):
+                # Need to update round_wins for users who get a bye also
+                if(new_score >=2):
                     dbplayer.round_wins += 1
 
                 already_played = json.loads(dbplayer.already_matched)
@@ -454,6 +456,7 @@ def nextround():
 
             users = User.query.all()
             for user in users:
+                # Remove the admin user from tournaments
                 if(user.first_name == "admin"):
                     users.remove(user)
                     break
@@ -559,6 +562,7 @@ def admin():
             users = User.query.all()
             user_data = []
             for user in users:
+                # Remove the admin user from tournaments
                 if(user.first_name == "admin"):
                     users.remove(user)
                 else:
@@ -569,6 +573,7 @@ def admin():
             user_data = json.dumps(user_data)
 
             top_user = User.query.first()
+            # Remove the admin user from tournaments
             matrix_size = top_user.id - 1
             already_played_matrix = [[0] * matrix_size for _ in range(matrix_size)]
             already_played_matrix = json.dumps(already_played_matrix)
@@ -615,8 +620,11 @@ def admin():
                     ])
             #top_user = User.query.first()
             #player_count = top_user.id
+
+            # Remove the admin user from tournaments
             player_count = User.query.count() - 1
             print("count is:", player_count)
+            # We are currently running one round less for tournaments with floor logic. Instead we need to use ceil for the proper number of rounds.
             round_count = math.ceil((math.log2(player_count)))
             print("no. of rounds is ", round_count)
             round_count = Max_rounds_t(max_rounds=round_count, current_round=1)
