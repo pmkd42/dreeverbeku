@@ -1,6 +1,8 @@
 import csv
 
+# The csv file exported from PvPoke with the entire list of eligible pokemon
 monList = "/Users/shreyash/Documents/devtrees/PoGoBlr/G20Cup.csv"
+# The file to write the Pokemon List to
 writeList = "/Users/shreyash/Documents/devtrees/PoGoBlr/dreeverbeku/mysite/monlist.txt"
 # writeList = "/Users/shreyash/Documents/devtrees/PoGoBlr/testOut.txt"
 
@@ -54,6 +56,7 @@ with open(monList, "r") as file:
             print(mon)
         else:
             if len(finalList) > 2:
+                #First pokmeon doesn't need a , before it
                 finalList = finalList + ", '" + mon.lower() + "'"
             else:
                 finalList = finalList + "'" + mon.lower() + "'"
