@@ -1,3 +1,4 @@
+# File to convert a pvpPoke exported csv to the format that our website uses
 import csv
 
 # The csv file exported from PvPoke with the entire list of eligible pokemon
