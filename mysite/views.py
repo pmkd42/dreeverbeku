@@ -421,6 +421,7 @@ def nextround():
             round_info = Max_rounds_t.query.first()
             next_round = round_info.current_round + 1
             round_info.current_round = next_round
+            print("Current Round: " + next_round)
             db.session.commit()
 
             '''latest_entry = Standings.query.order_by(Standings.round.desc()).first()
@@ -486,12 +487,14 @@ def nextround():
     #create matchups based on master
                 pairings = []
                 played = set()
-                print(players)
+                # print(players)
                 # Sort players based on round wins (highest to lowest)
                 players.sort(key=lambda x: int(x['round_wins']), reverse=True)
 
                 while len(players) > 1:
-                    print("remaining players:", players)
+                    print("remaining players:")
+                    for player in players:
+                        print(player.first_name)
                     current_player = players.pop(0)
                     if(current_player['ign'] not in played):
                         print("for ", current_player['ign'])
@@ -514,7 +517,7 @@ def nextround():
                         for pairing in pairings:
                             if(current_player['ign'] in pairing):
                                 print(current_player['ign'], " ge Hingirutte: ",pairing)
-                if len(players) == 1:
+                if (len(players) == 1 and players[0]['ign'] not in played):
                     pairings.append((players[0]['ign'], players[0]['ign']))
                 with open('/home/dreeverbeku/mysite/pairings.csv', 'w', newline='') as file:
                     writer = csv.writer(file)
@@ -562,6 +565,7 @@ def admin():
             users = User.query.all()
             user_data = []
             for user in users:
+                last_user = user
                 # Remove the admin user from tournaments
                 if(user.first_name == "admin"):
                     users.remove(user)
@@ -574,7 +578,9 @@ def admin():
 
             top_user = User.query.first()
             # Remove the admin user from tournaments
-            matrix_size = top_user.id - 1
+            matrix_size = last_user.id - 1
+            print("Shreyas: ")
+            print(last_user.id)
             already_played_matrix = [[0] * matrix_size for _ in range(matrix_size)]
             already_played_matrix = json.dumps(already_played_matrix)
 
@@ -622,7 +628,7 @@ def admin():
             #player_count = top_user.id
 
             # Remove the admin user from tournaments
-            player_count = User.query.count() - 1
+            player_count = matrix_size
             print("count is:", player_count)
             # We are currently running one round less for tournaments with floor logic. Instead we need to use ceil for the proper number of rounds.
             round_count = math.ceil((math.log2(player_count)))
