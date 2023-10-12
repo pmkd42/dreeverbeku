@@ -211,6 +211,8 @@ def tourney():
             reader = csv.reader(file)
             for row in reader:
                 pairings.append(row)
+        #set yourelf as opponent to avoid crashing
+        opponent = player
         for pairing in pairings:
                 if pairing[0] == player:
                     opponent = pairing[1]
@@ -421,7 +423,8 @@ def nextround():
             round_info = Max_rounds_t.query.first()
             next_round = round_info.current_round + 1
             round_info.current_round = next_round
-            print("Current Round: " + next_round)
+            print("Current Round: ")
+            print(next_round)
             db.session.commit()
 
             '''latest_entry = Standings.query.order_by(Standings.round.desc()).first()
@@ -458,7 +461,7 @@ def nextround():
             users = User.query.all()
             for user in users:
                 # Remove the admin user from tournaments
-                if(user.first_name == "admin"):
+                if(user.first_name == "admin" or user.first_name == "Pmkd42"):
                     users.remove(user)
                     break
             file_path = '/home/dreeverbeku/mysite/master_match.csv'
@@ -495,7 +498,7 @@ def nextround():
                 while len(players) > 1:
                     print("remaining players:")
                     for player in players:
-                        print(player.first_name)
+                        print(player['ign'])
                     current_player = players.pop(0)
                     if(current_player['ign'] not in played):
                         print("for ", current_player['ign'])
@@ -568,7 +571,7 @@ def admin():
             for user in users:
                 last_user = user
                 # Remove the admin user from tournaments
-                if(user.first_name == "admin"):
+                if(user.first_name == "admin" or user.first_name == "Pmkd42"):
                     users.remove(user)
                 else:
                     user_data.append({
@@ -581,7 +584,6 @@ def admin():
             matrix_size = last_user.id - 1
             already_played_matrix = [[0] * matrix_size for _ in range(matrix_size)]
             already_played_matrix = json.dumps(already_played_matrix)
-
             standing_zero = Standings(scores=user_data, already_played=already_played_matrix)
             db.session.add(standing_zero)
             db.session.commit()
