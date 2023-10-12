@@ -488,7 +488,8 @@ def nextround():
                 pairings = []
                 played = set()
                 # print(players)
-                # Sort players based on round wins (highest to lowest)
+                # Sort players based on toughness first and then based on round wins, to have similar round wins sorted according to toughness (highest to lowest)
+                players.sort(key=lambda x: int(x['toughness']), reverse=True)
                 players.sort(key=lambda x: int(x['round_wins']), reverse=True)
 
                 while len(players) > 1:
@@ -576,11 +577,8 @@ def admin():
                     })
             user_data = json.dumps(user_data)
 
-            top_user = User.query.first()
             # Remove the admin user from tournaments
             matrix_size = last_user.id - 1
-            print("Shreyas: ")
-            print(last_user.id)
             already_played_matrix = [[0] * matrix_size for _ in range(matrix_size)]
             already_played_matrix = json.dumps(already_played_matrix)
 
