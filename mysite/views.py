@@ -211,11 +211,15 @@ def tourney():
             reader = csv.reader(file)
             for row in reader:
                 pairings.append(row)
+        #set yourelf as opponent to avoid crashing
+        opponent = player
         for pairing in pairings:
                 if pairing[0] == player:
                     opponent = pairing[1]
+                    break
                 elif pairing[1] == player:
                     opponent = pairing[0]
+                    break
         opponent_string = opponent
         opponent = User.query.filter_by(first_name=opponent).first()
         dbplayer = User.query.filter_by(first_name=player).first()
@@ -370,8 +374,12 @@ def tourney():
                 # Update the wins field in the database
                 dbplayer.wins = serialized_pairings
 
-                dbplayer.total_wins += new_score
+                # Updating total wins and toughness only if the user faces an opponent
+                if(dbplayer.first_name != opponent.first_name):
+                    dbplayer.total_wins += new_score
+                    dbplayer.toughness += new_score
 
+                # Need to update round_wins for users who get a bye also
                 if(new_score >=2):
                     dbplayer.round_wins += 1
 
@@ -381,7 +389,6 @@ def tourney():
                 dbplayer.already_matched = ap_ser
                 db.session.commit()
 
-                dbplayer.toughness += new_score
                 oppt = json.loads(opponent.wins)
 
                 db.session.commit()
@@ -416,6 +423,8 @@ def nextround():
             round_info = Max_rounds_t.query.first()
             next_round = round_info.current_round + 1
             round_info.current_round = next_round
+            print("Current Round: ")
+            print(next_round)
             db.session.commit()
 
             '''latest_entry = Standings.query.order_by(Standings.round.desc()).first()
@@ -450,6 +459,11 @@ def nextround():
             db.session.commit()'''
 
             users = User.query.all()
+            for user in users:
+                # Remove the admin user from tournaments
+                if(user.first_name == "admin" or user.first_name == "Pmkd42"):
+                    users.remove(user)
+                    break
             file_path = '/home/dreeverbeku/mysite/master_match.csv'
             with open(file_path, 'w', newline='') as file:
                 writer = csv.writer(file)
@@ -468,24 +482,23 @@ def nextround():
                         user.round_wins
                     ])
             with open(file_path, 'r') as file:
-                reader = csv.reader(file)
+                reader = csv.DictReader(file)
+                players = []
                 for row in reader:
+                    players.append(row)
                     print(row)
     #create matchups based on master
-                players = []
-                with open(file_path, 'r') as file:
-                    reader = csv.DictReader(file)
-                    for row in reader:
-                        players.append(row)
-
                 pairings = []
                 played = set()
-                print(players)
-                # Sort players based on round wins (highest to lowest)
+                # print(players)
+                # Sort players based on toughness first and then based on round wins, to have similar round wins sorted according to toughness (highest to lowest)
+                players.sort(key=lambda x: int(x['toughness']), reverse=True)
                 players.sort(key=lambda x: int(x['round_wins']), reverse=True)
 
                 while len(players) > 1:
-                    print("remaining players:", players)
+                    print("remaining players:")
+                    for player in players:
+                        print(player['ign'])
                     current_player = players.pop(0)
                     if(current_player['ign'] not in played):
                         print("for ", current_player['ign'])
@@ -494,7 +507,7 @@ def nextround():
                         for player in players:
                             if player['ign'] not in current_player['already_matched'] and player['ign'] not in played:
                                 opponent = player
-                                print("oppoenent is", opponent)
+                                print("opponent is", opponent)
                                 break
 
                         if opponent is None:
@@ -508,7 +521,7 @@ def nextround():
                         for pairing in pairings:
                             if(current_player['ign'] in pairing):
                                 print(current_player['ign'], " ge Hingirutte: ",pairing)
-                if len(players) == 1:
+                if (len(players) == 1 and players[0]['ign'] not in played):
                     pairings.append((players[0]['ign'], players[0]['ign']))
                 with open('/home/dreeverbeku/mysite/pairings.csv', 'w', newline='') as file:
                     writer = csv.writer(file)
@@ -528,7 +541,7 @@ def admin():
 
     if request.method == 'GET':
         ign = current_user.first_name
-        if (ign == "Pmkd42"):
+        if (ign == "Pmkd42" or ign == "admin"):
             return render_template("admin.html", user=current_user, current_stage=stage)
         else:
             flash("Not an Admin!", category='error')
@@ -556,17 +569,21 @@ def admin():
             users = User.query.all()
             user_data = []
             for user in users:
-                user_data.append({
-                    'ign': user.first_name
+                last_user = user
+                # Remove the admin user from tournaments
+                if(user.first_name == "admin" or user.first_name == "Pmkd42"):
+                    users.remove(user)
+                else:
+                    user_data.append({
+                        'ign': user.first_name
             # Add other attributes as per your User class
-                })
+                    })
             user_data = json.dumps(user_data)
 
-            top_user = User.query.first()
-            matrix_size = top_user.id
+            # Remove the admin user from tournaments
+            matrix_size = last_user.id - 1
             already_played_matrix = [[0] * matrix_size for _ in range(matrix_size)]
             already_played_matrix = json.dumps(already_played_matrix)
-
             standing_zero = Standings(scores=user_data, already_played=already_played_matrix)
             db.session.add(standing_zero)
             db.session.commit()
@@ -609,9 +626,12 @@ def admin():
                     ])
             #top_user = User.query.first()
             #player_count = top_user.id
-            player_count = User.query.count()
+
+            # Remove the admin user from tournaments
+            player_count = matrix_size
             print("count is:", player_count)
-            round_count = math.floor((math.log2(player_count)))
+            # We are currently running one round less for tournaments with floor logic. Instead we need to use ceil for the proper number of rounds.
+            round_count = math.ceil((math.log2(player_count)))
             print("no. of rounds is ", round_count)
             round_count = Max_rounds_t(max_rounds=round_count, current_round=1)
             db.session.add(round_count)

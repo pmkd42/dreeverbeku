@@ -234,12 +234,13 @@
 <label for="form-2" style="font-size: 20px;">How many battles did you win:</label>
     <input type="hidden" name="form_type" value="form2">
     <select name="form-type" id="form2" style="font-size: 20px; padding: 10px;">
-      <option value="0">0</option>
       {% if opponent != user %}
+      <option value="0">0</option>
       <option value="1">1</option>
       <option value="2">2</option>
-      <option value="3">3</option>
       {% endif %}
+<!--         Showing only 3 for the user who is getting a bye -->
+      <option value="3">3</option>
     </select>
     <br><br>
     <button type="submit">Submit</button>

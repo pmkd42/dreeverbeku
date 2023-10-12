@@ -33,7 +33,7 @@
           <a class="nav-item nav-link" id="home" href="/">Home</a>
           <a class="nav-item nav-link" id="home" href="/tournament">Tournament</a>
           <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
-          {% if user.first_name=='Pmkd42' %}
+          {% if user.first_name=='Pmkd42' or user.first_name=='admin' %}
           <a class="nav-item nav-link" id="admin" href="/admin">Admin</a>
           <a class="nav-item nav-link" id="admin" href="/next-round-admin">Next Round Admin</a>
           {% endif %}
