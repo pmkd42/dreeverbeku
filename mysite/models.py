@@ -30,7 +30,7 @@ class Team(db.Model):
     mon8_shadow = db.Column(db.Integer)
     mon8_safe= db.Column(db.Integer, default=0)
     round_bans = db.Column(db.String, nullable=True)
-    date = db.Column(db.DateTime(timezone=True), default=func.now())
+    date = db.Column(db.DateTime(timezone=True), default=func.now(), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 
@@ -48,6 +48,7 @@ class User(db.Model, UserMixin):
     total_wins = db.Column(db.Integer, default=0)
     already_matched = db.Column(db.String, default='[]')
     toughness = db.Column(db.Integer, default=0)
+    team_set = db.Column(db.Integer, default=0)
 
 class MyModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)

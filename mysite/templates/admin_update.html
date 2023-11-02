@@ -1,0 +1,70 @@
+{% extends "base.html" %} {% block title %}Admin Update{% endblock %} {% block content
+%}
+    <h1>Data from JSON</h1>
+    {% if json_data|length == 0 %}
+        <p>No JSON data available.</p>
+    {% else %}
+        <table border="1">
+            <tr>
+                <th>Username</th>
+                <th>wins</th>
+                <th>edit_wins</th>
+                <th>Email</th>
+                <th>total_wins</th>
+                <th>edit_total_wins</th>
+                <th>already_matched</th>
+                <th>edit_already_matched</th>
+                <th>toughness</th>
+                <th>edit_toughness</th>
+                <th>round_wins</th>
+                <th>edit_round_wins</th>
+            </tr>
+            {% for item in json_data %}
+                <tr>
+                    <td>{{ item[0] }}</td>
+                    <td>{{ item[1] }}</td>
+                    <td>
+                            <select name="dropdown_{{ loop.index }}">
+                                <option value="value1">Option 1</option>
+                                <option value="value2">Option 2</option>
+                                <option value="value3">Option 3</option>
+                            </select>
+                    </td>
+                    <td>{{ item[2] }}</td>
+                    <td>{{ item[3] }}</td>
+                    <td>
+                            <select name="dropdown_{{ loop.index }}">
+                                <option value="value1">Option 1</option>
+                                <option value="value2">Option 2</option>
+                                <option value="value3">Option 3</option>
+                            </select>
+                    </td>
+                    <td>{{ item[4] }}</td>
+                    <td>
+                            <select name="dropdown_{{ loop.index }}">
+                                <option value="value1">Option 1</option>
+                                <option value="value2">Option 2</option>
+                                <option value="value3">Option 3</option>
+                            </select>
+                    </td>
+                    <td>{{ item[5] }}</td>
+                    <td>
+                            <select name="dropdown_{{ loop.index }}">
+                                <option value="value1">Option 1</option>
+                                <option value="value2">Option 2</option>
+                                <option value="value3">Option 3</option>
+                            </select>
+                    </td>
+                    <td>{{ item[6] }}</td>
+                    <td>
+                            <select name="dropdown_{{ loop.index }}">
+                                <option value="value1">Option 1</option>
+                                <option value="value2">Option 2</option>
+                                <option value="value3">Option 3</option>
+                            </select>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+{% endblock %}

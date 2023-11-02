@@ -7,6 +7,8 @@ import requests
 import random
 import csv
 import math
+from ast import literal_eval
+from datetime import datetime
 
 views = Blueprint('views', __name__)
 
@@ -49,14 +51,6 @@ def home():
             mon8 = request.form.get('mon8')
 
             entered_team = Team.query.filter_by(user_id=current_user.id).first()
-            mon1_copy = mon1
-            mon2_copy = mon2
-            mon3_copy = mon3
-            mon4_copy = mon4
-            mon5_copy = mon5
-            mon6_copy = mon6
-            mon7_copy = mon7
-            mon8_copy = mon8
             if(entered_team):
                 if(mon1):
                     if("shadow" in mon1):
@@ -182,6 +176,28 @@ def home():
         return render_template("home.html", user=current_user, current_stage=stage, options=options, filenames=filenames, zip=zip, str=str, eval=eval, ban=ban, shadow_1=0,
         shadow_2=0,shadow_3=0,shadow_4=0,shadow_5=0,shadow_6=0,shadow_7=0,shadow_8=0)
 
+def make_team_small():
+    users = User.query.all()
+    for user in users:
+        team = Team.query.filter_by(user_id=user.id).first()
+        if team:
+            if team.mon1:
+                team.mon1 = team.mon1.lower()
+            if team.mon2:
+                team.mon2 = team.mon2.lower()
+            if team.mon3:
+                team.mon3 = team.mon3.lower()
+            if team.mon4:
+                team.mon4 = team.mon4.lower()
+            if team.mon5:
+                team.mon5 = team.mon5.lower()
+            if team.mon6:
+                team.mon6 = team.mon6.lower()
+            if team.mon7:
+                team.mon7 = team.mon7.lower()
+            if team.mon8:
+                team.mon8 = team.mon8.lower()
+        db.session.commit()
 
 
 @views.route('/delete-team', methods=['POST'])
@@ -250,7 +266,7 @@ def tourney():
             matrix[user_a_index][user_b_index] = 1
             matrix[user_b_index][user_a_index] = 1
 
-            # Save the updated matrix
+        # Save the updated matrix
         standings.already_played = matrix
         db.session.commit()
         my_model = MyModel.query.first()
@@ -285,13 +301,10 @@ def tourney():
             form_type = request.form.get('form_type')
             if form_type == 'form1':
                 safe_picks = request.form['selectedImages']
-                #print("Safe picks are ",safe_picks)
                 available_numbers = [x for x in range(1, 9) if str(x) not in safe_picks]
-                #print("Available are ", available_numbers)
                 usr_team = Team.query.filter_by(user_id=current_user.id).first()
                 if(current_user.banned==0):
                     random_numbers = random.sample(available_numbers, 2)
-                    copy_random_numbers = random_numbers
                     roundb = []
                     if 1 in random_numbers:
                         usr_team.mon1_safe = 1
@@ -319,7 +332,6 @@ def tourney():
                         roundb.append(8)
                     dbplayer = User.query.filter_by(first_name=player).first()
                     dbplayer.banned = 1
-                    db.session.commit()
                     usr_team.round_bans = json.dumps(roundb)
                     db.session.commit()
                 else:
@@ -336,7 +348,7 @@ def tourney():
                 message = str(random_numbers[0]) + " and " + str(random_numbers[1]) + " are banned"
                 flash(message, category='error')
 
-            # Perform necessary operations for Form 1
+            # Perform necessary operations for Form 2
             elif form_type == 'form2':
                 dbplayer = User.query.filter_by(first_name=player).first()
                 dbplayer.submitted = 1
@@ -345,79 +357,72 @@ def tourney():
                 usr_team = Team.query.filter_by(user_id=current_user.id).first()
                 random_numbers = json.loads(usr_team.round_bans)
                 submitted = 1
-                player_name = current_user.id
                 new_score= int(request.form.get('form-type'))
-                standings = Standings.query.first()
-                scores = standings.scores
-                #print(scores)
-                #print(new_score)
                 flash("Submitted Bans!", category='error')
-                '''for i, entry in enumerate(scores):
-                    if entry[0] == player_name:
-                        scores[i][1] = new_score
-                        break
-                    if entry[2] == player_name:
-                        scores[i][3] = new_score
-                        break'''
+
                 # Update the "scores" column in the table with the modified scores
-                standings.scores = scores
-                db.session.commit()
-
-                existing_pairings = json.loads(dbplayer.wins)
-
-                # Add the integer value to the pairings
-                existing_pairings.append(new_score)
-
-                # Serialize the updated pairings
-                serialized_pairings = json.dumps(existing_pairings)
-
-                # Update the wins field in the database
-                dbplayer.wins = serialized_pairings
-
-                # Updating total wins and toughness only if the user faces an opponent
-                if(dbplayer.first_name != opponent.first_name):
-                    dbplayer.total_wins += new_score
-                    dbplayer.toughness += new_score
-
-                # Need to update round_wins for users who get a bye also
-                if(new_score >=2):
-                    dbplayer.round_wins += 1
 
                 already_played = json.loads(dbplayer.already_matched)
-                already_played.append(opponent_string)
-                ap_ser = json.dumps(already_played)
-                dbplayer.already_matched = ap_ser
-                db.session.commit()
+                played = 0
+                if(opponent_string in already_played):
+                    played = 1
+                if(played == 0):
+                    existing_pairings = json.loads(dbplayer.wins)
 
-                oppt = json.loads(opponent.wins)
+                    # Add the integer value to the pairings
+                    existing_pairings.append(new_score)
 
-                db.session.commit()
+                    # Serialize the updated pairings
+                    serialized_pairings = json.dumps(existing_pairings)
 
-                #print("Enidhu ", dbplayer.already_matched, dbplayer.wins, dbplayer.total_wins, dbplayer.toughness, dbplayer.round_wins)
-                flash("Submitted Scores succesfully!", category='success')
+                    # Update the wins field in the database
+                    dbplayer.wins = serialized_pairings
+
+                    already_played.append(opponent_string)
+                    ap_ser = json.dumps(already_played)
+                    dbplayer.already_matched = ap_ser
+
+                    # Updating total wins and toughness only if the user faces an opponent
+                    if(dbplayer.first_name != opponent.first_name):
+                        dbplayer.total_wins += new_score
+                        dbplayer.toughness += new_score
+
+                    # Need to update round_wins for users who get a bye also
+                    if(new_score >=2):
+                        dbplayer.round_wins += 1
+
+                    db.session.commit()
+                    print(dbplayer.first_name, " :Submitted wins: ", new_score)
+                    flash("Submitted Scores succesfully!", category='success')
+
+                else:
+                    flash("Already Submitted Scores!", category='error')
+
             return render_template("tournament.html", user=current_user, zip=zip, str=str, eval=eval, opponent = opponent, submitted=submitted, stage=stage, ban=show_ban, subm=show_submit, toban1=random_numbers[0], toban2=random_numbers[1], oppban1 = opp_bans[0], oppban2 = opp_bans[1])
 
 
 @views.route('/next-round-admin', methods=['GET', 'POST'])
 @login_required
 def nextround():
-    '''round_info = Max_rounds_t.query.first()
-    max_rounds = round_info.max_rounds
-    to_be_round = round_info.current_round + 1
-    if(to_be_round > max_rounds):
-        return render_template("tournament_load.html", user=current_user)
-    else:'''
+    if request.method == 'GET':
+        users = User.query.all()
+        print("Not Submitted")
+        for user in users:
+            # Remove the unset user from tournaments
+            if(user.team_set == 0):
+                continue
+            elif user.submitted == 0:
+                print(user.first_name)
+
     if request.method == 'POST':
             from models import MyModel2
             no_more_check_ins = MyModel2(stage2=1)
             db.session.add(no_more_check_ins)
             db.session.commit()
 
-            '''player = current_user.first_name
-            dbplayer = User.query.filter_by(first_name=player).first()
-            dbplayer.submitted = 0'''
             db.session.query(User).update({User.submitted: 0})
             db.session.query(User).update({User.banned: 0})
+            db.session.query(Team).update({Team.round_bans: '[0,0]'})
             db.session.commit()
 
             round_info = Max_rounds_t.query.first()
@@ -427,43 +432,12 @@ def nextround():
             print(next_round)
             db.session.commit()
 
-            '''latest_entry = Standings.query.order_by(Standings.round.desc()).first()
-            if latest_entry:
-                # Convert the latest entry to JSON format
-                json_data = latest_entry.scores
-                json_data = json.dumps(json_data)
-            #handle case for round1 in else
-            else:
-                users = User.query.all()
-                user_data = []
-                for user in users:
-                    user_data.append({
-                        'submitted': user.submitted
-                # Add other attributes as per your User class
-                    })
-                json_data = user_data.as_dict()
-                json_data = json.dumps(json_data)
-            response = requests.post('https://pavanartim.pythonanywhere.com/topmkd', json=json_data)
-            pairings = response.json().get('data')
-            tourney_ex = Tournament(pairings)
-            db.session.add(tourney_ex)
-            db.session.commit()
-
-            matrix_size = len(pairings)
-            already_played_matrix = [[0] * matrix_size for _ in range(matrix_size)]
-            new_round = Standings(already_played = already_played_matrix, scores=pairings)
-            matrix_size = len(pairings)
-            already_played_matrix = [[0] * matrix_size for _ in range(matrix_size)]
-            new_round = Standings(already_played = already_played_matrix, scores=1)
-            db.session.add(new_round)
-            db.session.commit()'''
-
-            users = User.query.all()
-            for user in users:
-                # Remove the admin user from tournaments
-                if(user.first_name == "admin" or user.first_name == "Pmkd42"):
-                    users.remove(user)
-                    break
+            all_users = User.query.all()
+            users = []
+            for user in all_users:
+                # Remove the unset users from tournaments
+                if(user.team_set == 1):
+                    users.append(user)
             file_path = '/home/dreeverbeku/mysite/master_match.csv'
             with open(file_path, 'w', newline='') as file:
                 writer = csv.writer(file)
@@ -486,28 +460,20 @@ def nextround():
                 players = []
                 for row in reader:
                     players.append(row)
-                    print(row)
-    #create matchups based on master
+                #create matchups based on master
                 pairings = []
                 played = set()
-                # print(players)
                 # Sort players based on toughness first and then based on round wins, to have similar round wins sorted according to toughness (highest to lowest)
                 players.sort(key=lambda x: int(x['toughness']), reverse=True)
                 players.sort(key=lambda x: int(x['round_wins']), reverse=True)
 
                 while len(players) > 1:
-                    print("remaining players:")
-                    for player in players:
-                        print(player['ign'])
                     current_player = players.pop(0)
                     if(current_player['ign'] not in played):
-                        print("for ", current_player['ign'])
                         opponent = None
-                        print("already_matched is", current_player['already_matched'])
                         for player in players:
                             if player['ign'] not in current_player['already_matched'] and player['ign'] not in played:
                                 opponent = player
-                                print("opponent is", opponent)
                                 break
 
                         if opponent is None:
@@ -517,12 +483,10 @@ def nextround():
                         pairings.append((current_player['ign'], opponent['ign']))
                         played.add(current_player['ign'])
                         played.add(opponent['ign'])
-                    else:
-                        for pairing in pairings:
-                            if(current_player['ign'] in pairing):
-                                print(current_player['ign'], " ge Hingirutte: ",pairing)
+
                 if (len(players) == 1 and players[0]['ign'] not in played):
                     pairings.append((players[0]['ign'], players[0]['ign']))
+
                 with open('/home/dreeverbeku/mysite/pairings.csv', 'w', newline='') as file:
                     writer = csv.writer(file)
                     print("Writing this to pairings:")
@@ -530,7 +494,51 @@ def nextround():
                         print(pairing)
                         writer.writerow(pairing)
 
+            with open(file_path, 'r') as file:
+                reader = csv.DictReader(file)
+                players = []
+                for row in reader:
+                    players.append(row)
+            leader = "/home/dreeverbeku/mysite/leader.csv"
+            players.sort(key=lambda x: int(x['toughness']), reverse=True)
+            players.sort(key=lambda x: int(x['round_wins']), reverse=True)
+            with open(leader, 'w') as lead:
+                writer = csv.writer(lead)
+                writer.writerow(["IGN", "Wins", "TieBreakerScore"])
+                for player in players:
+                    ign = player["ign"]
+                    toughness = player["toughness"]
+                    wins = player["round_wins"]
+                    row = [ign,wins,toughness]
+                    writer.writerow(row)
+
     return render_template("nextround.html", user=current_user, stage2=1)
+
+
+@views.route('/admin_update', methods=['GET', 'POST'])
+@login_required
+def admin_update():
+    if request.method == 'GET':
+        users = User.query.all()
+        user_list = []
+        for user in users:
+            if user.team_set == 1:
+                user_list.append([
+                    user.first_name,
+                    user.wins,
+                    user.email,
+                    user.total_wins,
+                    user.already_matched,
+                    user.toughness,
+                    user.round_wins
+                    ])
+        ign = current_user.first_name
+        if (ign == "Pmkd42" or ign == "admin"):
+            return render_template("admin_update.html", json_data=user_list, user=current_user)
+        else:
+            flash("Not an Admin!", category='error')
+            return redirect("/")
+
 
 @views.route('/admin', methods=['GET', 'POST'])
 @login_required
@@ -540,6 +548,15 @@ def admin():
     stage = my_model.stage
 
     if request.method == 'GET':
+        users = User.query.all()
+        userc = 0
+        for user in users:
+            entered_team = Team.query.filter_by(user_id=user.id).first()
+            if(entered_team and entered_team.round_bans and user.team_set == 1):
+                userc = userc + 1
+                print(user.first_name)
+        print("Total Set Users :")
+        print(userc)
         ign = current_user.first_name
         if (ign == "Pmkd42" or ign == "admin"):
             return render_template("admin.html", user=current_user, current_stage=stage)
@@ -552,7 +569,6 @@ def admin():
             stage = 'Battle'
             my_model.stage='Battle'
             db.session.commit()
-
             db.session.query(User).update({User.submitted: 0})
             db.session.query(User).update({User.banned: 0})
             db.session.query(User).update({User.wins: '[]'})
@@ -562,26 +578,27 @@ def admin():
             db.session.query(User).update({User.already_matched: '[]'})
             db.session.commit()
 
-            '''round_info = Max_rounds_t.query.first()
-            round_info.current_round = 1
-            db.session.commit()'''
-
-            users = User.query.all()
+            all_users = User.query.all()
             user_data = []
-            for user in users:
-                last_user = user
-                # Remove the admin user from tournaments
-                if(user.first_name == "admin" or user.first_name == "Pmkd42"):
-                    users.remove(user)
-                else:
+            userc = 0
+            users = []
+            for user in all_users:
+                entered_team = Team.query.filter_by(user_id=user.id).first()
+                # Remove the users who have not set a team
+                if(entered_team and entered_team.mon1 and entered_team.mon2 and entered_team.mon3 and entered_team.mon4 and entered_team.mon5 and entered_team.mon6 and entered_team.mon7 and entered_team.mon8):
+                    set_user = User.query.filter_by(first_name=user.first_name).first()
+                    print(set_user.first_name)
+                    set_user.team_set = 1
+                    db.session.commit()
                     user_data.append({
                         'ign': user.first_name
-            # Add other attributes as per your User class
+                        # Add other attributes as per your User class
                     })
+                    users.append(user)
+                    userc = userc + 1
             user_data = json.dumps(user_data)
 
-            # Remove the admin user from tournaments
-            matrix_size = last_user.id - 1
+            matrix_size = userc
             already_played_matrix = [[0] * matrix_size for _ in range(matrix_size)]
             already_played_matrix = json.dumps(already_played_matrix)
             standing_zero = Standings(scores=user_data, already_played=already_played_matrix)
@@ -624,10 +641,7 @@ def admin():
                         user.toughness,
                         user.round_wins
                     ])
-            #top_user = User.query.first()
-            #player_count = top_user.id
 
-            # Remove the admin user from tournaments
             player_count = matrix_size
             print("count is:", player_count)
             # We are currently running one round less for tournaments with floor logic. Instead we need to use ceil for the proper number of rounds.
@@ -661,33 +675,298 @@ def admin():
             stage = 'Welcome'
             my_model.stage='Welcome'
             db.session.commit()
+            db.session.query(Team).update({Team.mon1: None})
+            db.session.query(Team).update({Team.mon2: None})
+            db.session.query(Team).update({Team.mon3: None})
+            db.session.query(Team).update({Team.mon4: None})
+            db.session.query(Team).update({Team.mon5: None})
+            db.session.query(Team).update({Team.mon6: None})
+            db.session.query(Team).update({Team.mon7: None})
+            db.session.query(Team).update({Team.mon8: None})
+            db.session.query(User).update({User.team_set: 0})
+            db.session.commit()
         return render_template("admin.html", user=current_user, current_stage=stage)
 
 @views.route('/delete_user', methods=['POST'])
 def delete_user():
-    ign = request.json['ign']
-    user = User.query.filter_by(first_name=ign).first()
+    email1 = request.json['email']
+    user = User.query.filter_by(email=email1).first()
     if user:
         db.session.delete(user)
         db.session.commit()
         return 'User deleted successfully'
     return 'User not found'
 
+@views.route('/get_detailed_users', methods=['GET'])
+def get_detailed_users():
+    users = User.query.all()
+    toret = []
+    toret.append([
+            "user.first_name",
+            "user.wins",
+            "user.email",
+            "user.total_wins",
+            "user.already_matched",
+            "user.toughness",
+            "user.round_wins",
+            "user.submitted",
+            "user.banned",
+            "user.team_set"
+            ])
+    toret.append([
+            "team.id(PK)",
+            "team.round_bans",
+            "mons",
+            "team.user_id(FK)"
+            ])
+        # Write user data rows
+    for user in users:
+        toret.append([
+            user.first_name,
+            user.wins,
+            user.email,
+            user.total_wins,
+            user.already_matched,
+            user.toughness,
+            user.round_wins,
+            user.submitted,
+            user.banned,
+            user.team_set
+            ])
+        if user.teams:
+            team1 = Team.query.filter_by(user_id=user.id).first()
+            toret.append([
+            team1.id,
+            team1.round_bans,
+            team1.mon1,
+            team1.mon1_shadow,
+            team1.mon2,
+            team1.mon2_shadow,
+            team1.mon3,
+            team1.mon3_shadow,
+            team1.mon4,
+            team1.mon4_shadow,
+            team1.mon5,
+            team1.mon5_shadow,
+            team1.mon6,
+            team1.mon6_shadow,
+            team1.mon7,
+            team1.mon7_shadow,
+            team1.mon8,
+            team1.mon8_shadow,
+            team1.user_id
+            ])
+        else:
+            toret.append(["No team set"])
+    return jsonify(toret)
+
+@views.route('/get_leaderboard', methods=['GET'])
+def get_leaderboard():
+    # Query all users and sort by round_wins (ascending)
+    # Then, sort by toughness (ascending) as a secondary sort
+    users = User.query.order_by(User.round_wins.desc(), User.toughness.desc()).all()
+    user_data = []
+    user_data.append([
+        "first_name",
+        "toughness",
+        "round_wins"
+        ])
+    for user in users:
+        user_data.append([
+            user.first_name,
+            user.toughness,
+            user.round_wins
+        ])
+    return jsonify(user_data)
+
 @views.route('/get_users', methods=['GET'])
 def get_users():
     users = User.query.all()
     toret = []
+    toret.append([
+            "user.first_name",
+            "user.wins",
+            "user.email",
+            "user.total_wins",
+            "user.already_matched",
+            "user.toughness",
+            "user.round_wins"
+            ])
         # Write user data rows
     for user in users:
-            toret.append([
+        toret.append([
+            user.first_name,
+            user.wins,
+            user.email,
+            user.total_wins,
+            user.already_matched,
+            user.toughness,
+            user.round_wins
+            ])
+        if user.teams:
+            team1 = Team.query.filter_by(user_id=user.id).first()
+            toret.append('round_bans - ')
+            toret.append(team1.round_bans)
+            print((type(team1.round_bans)))
+        else:
+            toret.append([])
+    return jsonify(toret)
+
+@views.route('/take_snapshot', methods=['GET'])
+def take_snapshot():
+    # Create a list to store data from the database
+    snapshot_data = {
+        'teams': [],
+        'users': []
+    }
+    teams = Team.query.all()
+    for team in teams:
+            team_data = {
+                "id": team.id,
+                "mon1": team.mon1,
+                "mon1_shadow": team.mon1_shadow,
+                "mon1_safe": team.mon1_safe,
+                "mon2": team.mon2,
+                "mon2_shadow": team.mon2_shadow,
+                "mon2_safe": team.mon2_safe,
+                "mon3": team.mon3,
+                "mon3_shadow": team.mon3_shadow,
+                "mon3_safe": team.mon3_safe,
+                "mon4": team.mon4,
+                "mon4_shadow": team.mon4_shadow,
+                "mon4_safe": team.mon4_safe,
+                "mon5": team.mon5,
+                "mon5_shadow": team.mon5_shadow,
+                "mon5_safe": team.mon5_safe,
+                "mon6": team.mon6,
+                "mon6_shadow": team.mon6_shadow,
+                "mon6_safe": team.mon6_safe,
+                "mon7": team.mon7,
+                "mon7_shadow": team.mon7_shadow,
+                "mon7_safe": team.mon7_safe,
+                "mon8": team.mon8,
+                "mon8_shadow": team.mon8_shadow,
+                "mon8_safe": team.mon8_safe,
+                "round_bans": team.round_bans,
+                "date": str(team.date),  # Convert date to string
+                "user_id": team.user_id
+            }
+            snapshot_data['teams'].append(team_data)
+
+    users = User.query.all()
+    for user in users:
+            user_data = {
+                "id": user.id,
+                "email": user.email,
+                "password": user.password,
+                "first_name": user.first_name
+                # Add other User fields as needed
+            }
+            snapshot_data['users'].append(user_data)
+
+    # Save the snapshot data to a JSON file
+    with open('/home/dreeverbeku/mysite/snapshot.json', 'w') as json_file:
+        json.dump(snapshot_data, json_file, indent=4)
+
+@views.route('/make_all_zero', methods=['GET'])
+def make_all_zero():
+            db.session.query(User).update({User.submitted: 0})
+            db.session.query(User).update({User.banned: 0})
+            db.session.query(Team).update({Team.round_bans: '[0,0]'})
+            db.session.commit()
+
+@views.route('/repopulate_db', methods=['GET'])
+def repopulate_db():
+    # Read the snapshot data from the JSON file
+    with open('/home/dreeverbeku/mysite/snapshot.json', 'r') as json_file:
+        snapshot_data = json.load(json_file)
+
+        # Repopulate the database with the snapshot data for Team
+        for team_data in snapshot_data['teams']:
+            team_data['date'] = datetime.strptime(team_data['date'], '%Y-%m-%d %H:%M:%S')
+            print(type(team_data['date']))
+            team = Team(**team_data)
+            db.session.add(team)
+
+        # Repopulate the database with the snapshot data for User
+        for user_data in snapshot_data['users']:
+            user = User(**user_data)
+            db.session.add(user)
+
+        db.session.commit()
+
+@views.route('/get_wronged_users', methods=['GET'])
+def get_wronged_users():
+    toret = []
+    users = User.query.all()
+    for user in users:
+        entered_team = Team.query.filter_by(user_id=user.id).first()
+        if(entered_team.round_bans):
+            print(user.first_name)
+            print(entered_team.round_bans)
+    return jsonify(toret)
+
+@views.route('/get_not_submitted_users', methods=['GET'])
+def get_not_submitted_users():
+    users = User.query.all()
+    not_submitted_teams = []
+    for user in users:
+        if not user.teams:
+            not_submitted_teams.append([user.first_name,user.email])
+    return jsonify(not_submitted_teams)
+
+@views.route('/get_double_submitted_users', methods=['GET'])
+def get_double_submitted_users():
+    round_num = int(request.json['round_num'])
+    users = User.query.all()
+    double_submitted_teams = []
+    double_submitted_teams.append([
+            "user.first_name",
+            "user.wins",
+            "user.total_wins",
+            "user.already_matched",
+            "user.toughness",
+            "user.round_wins"
+            ])
+    for user in users:
+        if len(literal_eval(user.already_matched)) > round_num:
+            print(user.first_name, len(literal_eval(user.already_matched)), user.already_matched)
+            double_submitted_teams.append([
                 user.first_name,
                 user.wins,
                 user.total_wins,
                 user.already_matched,
                 user.toughness,
                 user.round_wins
+                ])
+    return jsonify(double_submitted_teams)
+
+
+@views.route('/get_score_not_submitted_users', methods=['GET'])
+def get_score_not_submitted_users():
+    round_num = int(request.json['round_num'])
+    users = User.query.all()
+    score_not_submitted_teams = []
+    score_not_submitted_teams.append([
+            "user.first_name",
+            "user.wins",
+            "user.total_wins",
+            "user.already_matched",
+            "user.toughness",
+            "user.round_wins"
             ])
-    return jsonify(toret)
+    for user in users:
+        if len(literal_eval(user.already_matched)) < round_num:
+            print(user.first_name, len(literal_eval(user.already_matched)), user.already_matched)
+            score_not_submitted_teams.append([
+                user.first_name,
+                user.wins,
+                user.total_wins,
+                user.already_matched,
+                user.toughness,
+                user.round_wins
+                ])
+    return jsonify(score_not_submitted_teams)
 
 @views.route('/update_user', methods=['PUT'])
 def update_user():
@@ -697,7 +976,7 @@ def update_user():
         if 'total_wins' in request.json:
             total_wins = request.json['total_wins']
             user.total_wins = total_wins
-        elif 'wins' in request.json:
+        if 'wins' in request.json:
             wins = request.json['wins']
             user.wins = wins
         if 'already_matched' in request.json:
@@ -709,6 +988,22 @@ def update_user():
         if 'round_wins' in request.json:
             round_wins = request.json['round_wins']
             user.round_wins = round_wins
+        if 'banned' in request.json:
+            banned = request.json['banned']
+            user.banned = banned
+        if 'reset_bans' in request.json:
+            reset_bans = request.json['reset_bans']
+            team1 = Team.query.filter_by(user_id=user.id).first()
+            new_roundb = [0,0]
+            team1.round_bans = json.dumps(new_roundb)
+            team1.mon1_safe = 0
+            team1.mon2_safe = 0
+            team1.mon3_safe = 0
+            team1.mon4_safe = 0
+            team1.mon5_safe = 0
+            team1.mon6_safe = 0
+            team1.mon7_safe = 0
+            team1.mon8_safe = 0
         db.session.commit()
         return 'User replaced successfully'
     return 'User not found'
